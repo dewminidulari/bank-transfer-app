@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Large Transfers</title>
+    <link rel="stylesheet" th:href="@{/historyStyle.css}">
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<header>
+    <h2>Bank Transfer System - Large Transfers</h2>
+    <a href="/" class="btn-back" style="background:#34495e; color:white; padding:8px 16px; text-decoration:none; border-radius:4px;">Back to Dashboard</a>
+</header>
+
+<div class="card" style="margin: 20px auto; max-width: 1000px; padding: 20px;">
+    <div class="header-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom: 20px;">
+        <h3>Transfers with Amount &ge; <span style="color:#27ae60;" th:text="${'LKR ' + minAmount}"></span></h3>
+        <form th:action="@{/large-transfers}" method="get" style="display:flex; gap:10px; align-items:center;">
+            <label for="min"><strong>Minimum Amount:</strong></label>
+            <input type="number" id="min" name="min" th:value="${minAmount}" step="100" style="padding:6px; border:1px solid #ccc; border-radius:4px;" required />
+            <button type="submit" style="padding:6px 16px; background:#2980b9; color:white; border:none; border-radius:4px; cursor:pointer;">Filter</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Time</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(transactions)}">
+            <td colspan="7" style="text-align:center; color:#7f8c8d;">No transfers found matching this minimum amount.</td>
+        </tr>
+        <tr th:each="t : ${transactions}">
+            <td th:text="${t.id}"></td>
+            <td th:text="${#temporals.format(t.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${t.fromAccount}"></td>
+            <td th:text="${t.toAccount}"></td>
+            <td th:text="${'LKR ' + t.amount}" style="font-weight:bold; color:#27ae60;"></td>
+            <td>
+                <span th:class="${t.status.name() == 'SUCCESS' ? 'badge-success' : 'badge-danger'}"
+                      th:text="${t.status}"></span>
+            </td>
+            <td th:text="${t.description}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
+

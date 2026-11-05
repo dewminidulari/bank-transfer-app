@@ -22,5 +22,13 @@ public class DataLoader implements CommandLineRunner {
             customerRepository.save(Customer.builder().accountNumber("100002").fullName("Nimali Perera").email("nimali@gmail.com").balance(new BigDecimal("25000.00")).build());
             customerRepository.save(Customer.builder().accountNumber("100003").fullName("Saman Kumara").email("saman@gmail.com").balance(new BigDecimal("10000.00")).build());
         }
+        if (customerRepository.countAccounts("999999") == 0) {
+            customerRepository.save(Customer.builder()
+                    .accountNumber("999999")
+                    .fullName("Bank Fee Reserve Account")
+                    .email("fees@bank.com")
+                    .balance(new BigDecimal("0.00"))
+                    .build());
+        }
     }
 }

@@ -122,9 +122,47 @@ public class BankController {
         @GetMapping("/accounts/{accountNumber}/history")
         public String accountHistory(@PathVariable String accountNumber, Model model) {
             List<BankTransaction> history = transactionRepository.findHistory(accountNumber);
+            BigDecimal totalSent = transactionRepository.getTotalAmountSent(accountNumber);
             model.addAttribute("accountNumber", accountNumber);
             model.addAttribute("history", history);
+            model.addAttribute("totalSent", totalSent != null ? totalSent : BigDecimal.ZERO);
             return "history";
+        }
+
+        // Task 12: Show transfers above a given amount (default min=10000)
+        @GetMapping("/large-transfers")
+        public String largeTransfers(@RequestParam(defaultValue = "10000") BigDecimal min, Model model) {
+            model.addAttribute("minAmount", min);
+            model.addAttribute("transactions", transactionRepository.findLargeTransfers(min));
+            return "large-transfers";
+        }
+
+        // Task 12: Deposit
+        @PostMapping("/deposit")
+        public String deposit(@RequestParam String accountNumber,
+                              @RequestParam BigDecimal amount,
+                              RedirectAttributes redirectAttributes) {
+            try {
+                bankService.deposit(accountNumber, amount);
+                redirectAttributes.addFlashAttribute("successMessage", "Deposit of LKR " + amount + " successful!");
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            }
+            return "redirect:/";
+        }
+
+        // Task 12: Withdraw
+        @PostMapping("/withdraw")
+        public String withdraw(@RequestParam String accountNumber,
+                               @RequestParam BigDecimal amount,
+                               RedirectAttributes redirectAttributes) {
+            try {
+                bankService.withdraw(accountNumber, amount);
+                redirectAttributes.addFlashAttribute("successMessage", "Withdrawal of LKR " + amount + " successful!");
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            }
+            return "redirect:/";
         }
 
 }
