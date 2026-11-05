@@ -9,13 +9,17 @@
 <body>
 
 <header>
-    <h2>🏦 Bank Transfer System</h2>
+    <h2>Bank Transfer System</h2>
     <a href="/" class="btn-back">Back to Dashboard</a>
 </header>
 
 <div class="card">
     <div class="header-row">
         <h3>Transaction History for Account: <span style="color:#3498db;" th:text="${accountNumber}"></span></h3>
+        <p style="margin-top: 8px; font-size: 1.05em;">
+            <strong>Total Amount Sent: </strong>
+            <span style="color:#e67e22; font-weight:bold;" th:text="${'LKR ' + (totalSent != null ? totalSent : '0.00')}">LKR 0.00</span>
+        </p>
     </div>
     <table>
         <thead>
