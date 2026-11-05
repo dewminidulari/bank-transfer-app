@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Transfer System</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+
+</head>
+
+<body>
+
+    <header>
+        <h1>Bank Transfer System</h1>
+    </header>
+
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Statistics Dashboard[cite: 3] -->
+    <div class="stats-container">
+        <div class="stat-box">
+            <h4>Total Bank Balance</h4>
+            <p th:text="${'LKR ' + (totalBalance != null ? totalBalance : '0.00')}"></p>
+        </div>
+        <div class="stat-box">
+            <h4>Total Customers</h4>
+            <p th:text="${totalCustomers}">0</p>
+        </div>
+        <div class="stat-box">
+            <h4>Successful Transfers</h4>
+            <p th:text="${successCount}">0</p>
+        </div>
+        <div class="stat-box">
+            <h4>Failed Transfers</h4>
+            <p th:text="${failCount}">0</p>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <!-- Left Side Forms -->
+        <div class="left-column">
+            <!-- Transfer Form[cite: 3] -->
+            <div class="card">
+                <h3>Fund Transfer</h3>
+                <form th:action="@{/transfer}" th:object="${transferRequest}" method="post">
+                    <div class="form-group">
+                        <label>From Account Number</label>
+                        <input type="text" th:field="*{fromAccount}" placeholder="e.g. 100001" required />
+                    </div>
+                    <div class="form-group">
+                        <label>To Account Number</label>
+                        <input type="text" th:field="*{toAccount}" placeholder="e.g. 100002" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (LKR)</label>
+                        <input type="number" step="0.01" th:field="*{amount}" placeholder="0.00" required />
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" th:field="*{simulateFailure}" id="simulateFailure" />
+                        <label for="simulateFailure" style="display:inline; color:#c0392b;">Simulate system failure
+                            (Rollback)</label>
+                    </div>
+                    <button type="submit">Transfer Money</button>
+                </form>
+            </div>
+
+            <!-- Add Customer Form -->
+            <div class="card">
+                <h3>Add New Customer</h3>
+                <form th:action="@{/customers}" method="post">
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="text" name="accountNumber" placeholder="e.g. 100004" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="fullName" placeholder="Kamal Perera" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="kamal@gmail.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Balance (LKR)</label>
+                        <input type="number" step="0.01" name="balance" placeholder="10000.00" required />
+                    </div>
+                    <button type="submit" class="btn-success">Add Customer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side Tables[cite: 3] -->
+        <div class="right-column">
+            <!-- Customer Accounts Table[cite: 3] -->
+            <div class="card">
+                <h3>Customer Accounts</h3>
+                <form th:action="@{/}" method="get" class="search-box">
+                    <input type="text" name="keyword" placeholder="Search customer by name..." />
+                    <button type="submit">Search</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Acc No</th>
+                            <th>Name</th>
+                            <th>Balance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${customers}">
+                            <td th:text="${c.accountNumber}"></td>
+                            <td th:text="${c.fullName}"></td>
+                            <td th:text="${'LKR ' + c.balance}" style="font-weight:bold; color:#27ae60;"></td>
+                            <td>
+                                <a th:href="@{/accounts/{acc}/history(acc=${c.accountNumber})}">History</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Latest Transactions Table[cite: 3] -->
+            <div class="card">
+                <h3>Latest Transactions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${transactions}">
+                            <td th:text="${#temporals.format(t.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td th:text="${t.fromAccount}"></td>
+                            <td th:text="${t.toAccount}"></td>
+                            <td th:text="${'LKR ' + t.amount}"></td>
+                            <td>
+                                <span th:class="${t.status.name() == 'SUCCESS' ? 'badge-success' : 'badge-danger'}"
+                                    th:text="${t.status}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
