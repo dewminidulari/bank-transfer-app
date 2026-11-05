@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account History</title>
+    <link rel="stylesheet" th:href="@{/historyStyle.css}">
+</head>
+<body>
+
+<header>
+    <h2>🏦 Bank Transfer System</h2>
+    <a href="/" class="btn-back">Back to Dashboard</a>
+</header>
+
+<div class="card">
+    <div class="header-row">
+        <h3>Transaction History for Account: <span style="color:#3498db;" th:text="${accountNumber}"></span></h3>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Timestamp</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="tx : ${history}">
+            <td th:text="${tx.id}"></td>
+            <td th:text="${tx.fromAccount}"></td>
+            <td th:text="${tx.toAccount}"></td>
+            <td th:text="${'LKR ' + tx.amount}" style="font-weight:bold;"></td>
+            <td>
+                <span th:class="${tx.status.name() == 'SUCCESS' ? 'badge-success' : 'badge-danger'}"
+                      th:text="${tx.status}">
+
+                </span>
+            </td>
+            <td th:text="${tx.description}"></td>
+            <td th:text="${#temporals.format(tx.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
